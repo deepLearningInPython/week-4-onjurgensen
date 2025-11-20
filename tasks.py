@@ -38,15 +38,17 @@ print(tokens)
 
 
 # Task 2: Create a function that takes a string and breaks it up into tokens and removes any 
-#   punctuation, and then converts each token to lowercase. The function should returns unique 
-#   words in alphabetical order.
+#   punctuation, and then converts each token to lowercase. 
+
+# The function should returns unique  words in alphabetical order.
+# so this was a lie...
 
 # Your code here:
 # -----------------------------------------------
 def tokenize(string: str) -> list:
-    tokens = [word.strip('.,!?"\'').lower() for word in string.split()]
-    tokens = np.unique(tokens).tolist()
-    return tokens
+    allowed = '\n\t ' + 'abcdefghijklmnopqrstuvwxyz0123456789'
+    cleaned = ''.join(ch for ch in string.lower() if ch in allowed)
+    return cleaned.split()
 
 
 # -----------------------------------------------
@@ -91,11 +93,12 @@ print(word_frequencies)
 # Your code here:
 # -----------------------------------------------
 def token_counts(string: str, k: int = 1) -> dict:
-    tokens = [word.strip('.,!?"\'').lower() for word in string.split()]
-    word_frequencies = {token: tokens.count(token) for token in tokens if tokens.count(token) > k}
-
-    
-    return word_frequencies
+    tokens = tokenize(string)
+    freq = {}
+    for t in tokens:
+        freq[t] = freq.get(t, 0) + 1
+    return {token: count for token, count in freq.items() if count >= k}
+# ...existing code...
 
 # test:
 text_hist = {'the': 2, 'quick': 1, 'brown': 1, 'fox': 1, 'jumps': 1, 'over': 1, 'lazy': 1, 'dog': 1}
@@ -184,7 +187,7 @@ all(i2t[t2i[tok]] == tok for tok in t2i) # should be True
 # -----------------------------------------------
 def tokenize_and_encode(documents: list) -> list:
     t2i, i2t = make_vocabulary_map(documents)
-    encoded_sentences = [[t2i[word] for word in sentence] for sentence in documents]
+    encoded_sentences = [[t2i[word.strip(".,!?\"'").lower()] for word in sentence.split()] for sentence in documents]
 
     return (encoded_sentences, t2i, i2t)
 
