@@ -1,0 +1,60 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: t4
+      id: t4
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: t4
+        setup-command: pip install pytest matplotlib statsmodels numpy scipy
+        command: pytest grade_task4.py
+        timeout: 10
+        max-score: 1
+    - name: t7
+      id: t7
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: t7
+        setup-command: pip install pytest matplotlib statsmodels numpy scipy
+        command: pytest grade_task7.py
+        timeout: 10
+        max-score: 1
+    - name: t8
+      id: t8
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: t8
+        setup-command: pip install pytest matplotlib statsmodels numpy scipy
+        command: pytest grade_task8.py
+        timeout: 10
+        max-score: 1
+    - name: t9
+      id: t9
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: t9
+        setup-command: pip install pytest matplotlib statsmodels numpy scipy
+        command: pytest grade_task9.py
+        timeout: 10
+        max-score: 1
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        T4_RESULTS: "${{steps.t4.outputs.result}}"
+        T7_RESULTS: "${{steps.t7.outputs.result}}"
+        T8_RESULTS: "${{steps.t8.outputs.result}}"
+        T9_RESULTS: "${{steps.t9.outputs.result}}"
+      with:
+        runners: t4,t7,t8,t9
